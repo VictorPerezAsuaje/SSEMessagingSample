@@ -1,6 +1,14 @@
 # Overview
 Simple Project to showcase how to create a Server Sent Event (SSE) flow using NET 8.
 
+The solution has two projects created only to demonstrate the idea of having a service that can cross layers to send the information to the user. The Application layer creates a ISseUserMessagingService that is registered on the API layer. This would work out as well if you had something like a DDD architecture and you register the ISseUserMessagingService on the Domain layer to use it across all the layers.
+
+The whole connection state and the user-specificity is achieved by using a static ConcurrentDictionary<string, SseContext> that allows you to sotre in a thread-safe environment the users that have accessed the page where you call the SSE endpoint in your client. This way you don't really need to insert and remove users from the dictionary, once they have been registered for the first time, it keeps track (on memory) of the status of its connection. Once the client request to be disconnected or they lose connection (by closing the window for instance), they change the state.
+
+Therefore, the connection has two status: Connected and Disconnected.
+
+You can change the behaviour of this approach, make it somehow persistent, queue messages in case the user has temporarily lost its connection, directly remove the users from the dictionary and ignore the status altogether. Whatever fits your use cases.
+
 ## Testing
 To properly test the solution, I would suggest you create a Postman collection with the following route:
 
